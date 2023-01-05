@@ -5,11 +5,12 @@ import Player from './Player';
 import { Link } from 'react-router-dom';
 
 
-const PlayerSelection = ({ players, onCreate, addPlayer, populateTournament }) => {
+const PlayerSelection = ({ players, onCreate, addPlayer, populateTournament, getSeeding }) => {
 
     const [statePlayer, setStatePlayer] = useState(
         {
             name: "",
+            rating: 1200,
         }
     )
 
@@ -36,8 +37,18 @@ const PlayerSelection = ({ players, onCreate, addPlayer, populateTournament }) =
     }
 
     const handleClick = () => {
-        console.log("test")
         populateTournament()
+    }
+
+    const handleChangeSeeding = (event) => {
+
+        console.log(event.target.value)
+        if (event.target.value == "Random") {
+            getSeeding(false)
+        }
+        else {
+            getSeeding(true)
+        }
     }
 
     return (
@@ -59,7 +70,17 @@ const PlayerSelection = ({ players, onCreate, addPlayer, populateTournament }) =
                     onChange={handleChange}
                     required minLength="1" />
                 <button id='button-general' className='add-btn' type="add-new-player">Add</button>
+
             </form>
+
+            <div onChange={handleChangeSeeding}>
+                <h3>Seeding:</h3>
+                <input type="radio" id="Random" name="drone" value="Random" >
+                </input><label>Unseeded</label>
+                <input type="radio" id="Seeded" name="drone" value="Seeded">
+                </input><label>Seeded</label>
+            </div>
+
             <Link to="/tournament/show"><button id='button-general' onClick={handleClick} >Generate Tournament</button></Link>
         </>
     )

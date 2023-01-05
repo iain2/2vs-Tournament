@@ -1,22 +1,20 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 
-const Game = ({ player1, player2, name, getWinners, handleFinalGame }) => {
+const Game = ({ player1, player2, name, getWinners, handleFinalGame, updatePlayer, gameNumber }) => {
 
     const [complete, setComplete] = useState(false)
 
-    // useEffect(() => {
-    //     checkBye()
-    // }, [])
+    const changeRatings = (winner, loser) => {
+        var d = winner.rating + loser.rating;
+        var p = winner.rating / d;
 
-    // const checkBye = () => {
-
-    //     if (player1.name == "BYE") {
-    //         winner2()
-    //     }
-    // }
-
-
+        var d1 = 1 - p;
+        var d2 = 32 * d1;
+        winner.rating += d2;
+        loser.rating -= d2;
+        return [winner, loser];
+    }
 
     const winner1 = () => {
 
@@ -25,25 +23,44 @@ const Game = ({ player1, player2, name, getWinners, handleFinalGame }) => {
                 if (player1.name === "BYE") {
                     return
                 }
-                getWinners(player1)
+                let playerList = changeRatings(player1, player2)
+                updatePlayer(playerList[0])
+                updatePlayer(playerList[1])
+                getWinners(playerList[0], gameNumber)
                 setComplete(true)
             }
             return
         }
 
         handleFinalGame()
+        let playerList = changeRatings(player1, player2)
+        updatePlayer(playerList[0])
+        updatePlayer(playerList[1])
+        setComplete(true)
 
     }
     const winner2 = () => {
         if (name !== "Final") {
             if (complete == false) {
-                getWinners(player2)
+                if (player1.name != "BYE") {
+                    let playerList = changeRatings(player2, player1)
+                    updatePlayer(playerList[0])
+                    updatePlayer(playerList[1])
+                    getWinners(playerList[0], gameNumber)
+                }
+                else {
+                    getWinners(player2, gameNumber)
+                }
                 setComplete(true)
             }
             return
         }
 
         handleFinalGame()
+        let playerList = changeRatings(player1, player2)
+        updatePlayer(playerList[0])
+        updatePlayer(playerList[1])
+        setComplete(true)
 
     }
 

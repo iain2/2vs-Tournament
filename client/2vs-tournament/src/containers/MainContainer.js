@@ -16,11 +16,11 @@ const MainContainer = () => {
 
   const [players, setPlayers] = useState([])
   const [selectedPlayers, setSelectedPlayers] = useState([])
-
   const [round16, setRound16] = useState([{ name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }])
   const [quarterFinalists, setQurterFinalists] = useState([{ name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }])
   const [finalists, setFinalists] = useState([{ name: "" }, { name: "" }])
   const [semiFinalists, setSemiFinalists] = useState([{ name: "" }, { name: "" }, { name: "" }, { name: "" }])
+  const [seeding, setSeeding] = useState(false);
 
 
 
@@ -39,6 +39,13 @@ const MainContainer = () => {
     const request = new Request();
     request.post("http://localhost:8080/api/players", player)
       .then(() => window.location = '/tournament')
+  }
+
+  const updatePlayer = (player) => {
+    console.log("update player called", player);
+    const request = new Request();
+    request.put("http://localhost:8080/api/players/{player.id}", player)
+
   }
 
   const handleDelete = (id) => {
@@ -68,11 +75,30 @@ const MainContainer = () => {
     setSelectedPlayers(filteredSelectedPlayers)
   }
 
+  const getSeeding = (seeding) => {
+    setSeeding(seeding)
+  }
+
+  const sortPlayers = (players) => {
+
+    if (seeding) {
+      return players.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating))
+    }
+    else {
+      return players.sort(() => Math.random() - 0.5)
+    }
+
+
+  }
+
   const populateTournament = () => {
 
 
-    const BYE = { name: "BYE" }
-    const selectedPlayersRandom = selectedPlayers.sort(() => Math.random() - 0.5)
+    const BYE = {
+      name: "BYE",
+      rating: 0,
+    }
+    const selectedPlayersRandom = sortPlayers(selectedPlayers)
 
     let data = {
       "name": "React Test",
@@ -91,11 +117,16 @@ const MainContainer = () => {
     if (selectedPlayers.length < 4) {
       let c = 4 - selectedPlayers.length
       for (let i = 0; i < c; i++) {
-        selectedPlayers.splice(i * 2, 0, BYE)
+        selectedPlayersRandom.splice(i * 2, 0, BYE)
       }
     }
     if (selectedPlayers.length == 4) {
-      setSemiFinalists(selectedPlayersRandom)
+      let sortedPlayers = [selectedPlayersRandom[0],
+      selectedPlayersRandom[3],
+      selectedPlayersRandom[1],
+      selectedPlayersRandom[2]
+      ]
+      setSemiFinalists(sortedPlayers)
       return
     }
     if (selectedPlayers.length < 8) {
@@ -103,10 +134,21 @@ const MainContainer = () => {
       for (let i = 0; i < c; i++) {
         selectedPlayers.splice(i * 2, 0, BYE)
       }
+      if (seeding) {
+        let sortedPlayers = sortPlayers(selectedPlayers)
+      }
     }
     if (selectedPlayers.length == 8) {
-
-      setQurterFinalists(selectedPlayersRandom)
+      let sortedPlayers = [selectedPlayersRandom[0],
+      selectedPlayersRandom[7],
+      selectedPlayersRandom[3],
+      selectedPlayersRandom[4],
+      selectedPlayersRandom[2],
+      selectedPlayersRandom[5],
+      selectedPlayersRandom[1],
+      selectedPlayersRandom[6]
+      ]
+      setQurterFinalists(sortedPlayers)
       return
     }
 
@@ -115,63 +157,56 @@ const MainContainer = () => {
       for (let i = 0; i < c; i++) {
         selectedPlayers.splice(i * 2, 0, BYE)
       }
+      if (seeding) {
+        let sortedPlayers = sortPlayers(selectedPlayers)
+      }
     }
     if (selectedPlayers.length == 16) {
-
-
-      setRound16(selectedPlayersRandom)
+      let sortedPlayers = [selectedPlayersRandom[0],
+      selectedPlayersRandom[15],
+      selectedPlayersRandom[7],
+      selectedPlayersRandom[8],
+      selectedPlayersRandom[4],
+      selectedPlayersRandom[11],
+      selectedPlayersRandom[3],
+      selectedPlayersRandom[12],
+      selectedPlayersRandom[2],
+      selectedPlayersRandom[13],
+      selectedPlayersRandom[5],
+      selectedPlayersRandom[10],
+      selectedPlayersRandom[6],
+      selectedPlayersRandom[9],
+      selectedPlayersRandom[1],
+      selectedPlayersRandom[14]
+      ]
+      setRound16(sortedPlayers)
       return
     }
 
     return
   }
 
-  const getfinalists = (winner) => {
+  const getfinalists = (winner, gameNumber) => {
 
     const finalistsCopy = [...finalists]
-    for (let i = 0; i < finalistsCopy.length; i++) {
-      if (finalistsCopy[i].name === winner.name) {
-        return
-      }
-      if (finalistsCopy[i].name === "") {
-        finalistsCopy[i] = winner
-        setFinalists(finalistsCopy)
-        return
-      }
-    }
+    finalistsCopy[gameNumber] = winner
+    setFinalists(finalistsCopy)
     return
   }
 
-  const getSemiFinalists = (winner) => {
+  const getSemiFinalists = (winner, gameNumber) => {
     const semiFinalistsCopy = [...semiFinalists]
-    for (let i = 0; i < semiFinalistsCopy.length; i++) {
-      if (semiFinalistsCopy[i].name === winner.name) {
-        return
-      }
-      if (semiFinalistsCopy[i].name === "") {
-        semiFinalistsCopy[i] = winner
-        setSemiFinalists(semiFinalistsCopy)
-        return
-      }
-    }
+    semiFinalistsCopy[gameNumber] = winner
+    setSemiFinalists(semiFinalistsCopy)
     return
 
   }
 
 
-  const getQuarterFinalists = (winner) => {
+  const getQuarterFinalists = (winner, gameNumber) => {
     const quarterFinalistsCopy = [...quarterFinalists]
-
-    for (let i = 0; i < quarterFinalistsCopy.length; i++) {
-      if (quarterFinalistsCopy[i].name === winner.name) {
-        return
-      }
-      if (quarterFinalistsCopy[i].name === "") {
-        quarterFinalistsCopy[i] = winner
-        setQurterFinalists(quarterFinalistsCopy)
-        return
-      }
-    }
+    quarterFinalistsCopy[gameNumber] = winner
+    setQurterFinalists(quarterFinalistsCopy)
     return
 
   }
@@ -191,11 +226,13 @@ const MainContainer = () => {
     request.post("http://localhost:8080/api/tournaments", data)
   }
 
+
+
   return (
     <>
 
       <Router>
-      <Header />
+        <Header />
 
         <Routes>
           {/*  ___________________________________________HOME______________________________________________________ */}
@@ -212,12 +249,13 @@ const MainContainer = () => {
               players={players}
               onCreate={createPlayer}
               addPlayer={addPlayer}
-              populateTournament={populateTournament} />} />
+              populateTournament={populateTournament}
+              getSeeding={getSeeding} />} />
 
 
           <Route path="/tournament/show" element={<ShowTournamentContainer selectedPlayers={selectedPlayers} finalists={finalists}
             semiFinalists={semiFinalists} quarterFinalists={quarterFinalists} getSemiFinalists={getSemiFinalists}
-            getfinalists={getfinalists} saveTournament={saveTournament} round16={round16} getQuarterFinalists={getQuarterFinalists} />} />
+            getfinalists={getfinalists} saveTournament={saveTournament} round16={round16} getQuarterFinalists={getQuarterFinalists} updatePlayer={updatePlayer} />} />
 
 
           {/*  ___________________________________________PLAYER_________________________________________________*/}

@@ -1,6 +1,6 @@
 package com.vs.vs.tournament.controller;
 
-import com.vs.vs.tournament.models.Tournament;
+
 import com.vs.vs.tournament.models.TournamentData;
 import com.vs.vs.tournament.repository.TournamentDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;

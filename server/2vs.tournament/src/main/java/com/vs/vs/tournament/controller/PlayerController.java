@@ -1,7 +1,7 @@
 package com.vs.vs.tournament.controller;
 
 import com.vs.vs.tournament.models.Player;
-import com.vs.vs.tournament.models.Tournament;
+
 import com.vs.vs.tournament.models.TournamentData;
 import com.vs.vs.tournament.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +43,16 @@ public class PlayerController {
     public ResponseEntity<Player> postPlayer(@RequestBody Player player){
         playerRepository.save(player);
         return new ResponseEntity<>(player, HttpStatus.CREATED);
+    }
+
+    @PutMapping(value = "/players/{id}")
+    public ResponseEntity<Player> updatePlayer(@RequestBody Player player){
+        Player updatePlayer = playerRepository.findById(player.getId()).orElse(null);
+        updatePlayer.setRating(player.getRating());
+        updatePlayer.setGame(player.getGame());
+        updatePlayer.setName(player.getName());
+        playerRepository.save(updatePlayer);
+        return new ResponseEntity<>(updatePlayer, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/players/{id}")

@@ -117,13 +117,13 @@ public class Round {
         winners.add(winner);
     }
 
-    public void populateRounds(Tournament t, List<Player> players) {
-
-        int numGames = t.getRounds().size() * 2;
-        Game g1 = new Game("cat");
-        Game g2 = new Game("dog");
-
-        Collections.shuffle(players);
+//    public void populateRounds(Tournament t, List<Player> players) {
+//
+//        int numGames = t.getRounds().size() * 2;
+//        Game g1 = new Game("cat");
+//        Game g2 = new Game("dog");
+//
+//        Collections.shuffle(players);
 
 //        for (int i = 0; i < t.getRounds().size(); i++) {
 //            g1 = new Game("cat");
@@ -132,4 +132,4 @@ public class Round {
 //            t.getRounds().get(0).addGame(g2);
 //        }
    }
-}
+
