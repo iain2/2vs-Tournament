@@ -40,6 +40,9 @@ const Game = ({ player1, player2, name, getWinners, handleFinalGame, updatePlaye
 
     }
     const winner2 = () => {
+        if (player2.name === "BYE") {
+            return
+        }
         if (name !== "Final") {
             if (complete == false) {
                 if (player1.name != "BYE") {
